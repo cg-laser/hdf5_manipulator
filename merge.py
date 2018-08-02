@@ -10,6 +10,7 @@ from collections import OrderedDict
 from parser import get_args_merge as parser
 import msg
 import check
+import argparse
 
 
 def get_filelist(bases):
@@ -59,9 +60,15 @@ if __name__ == '__main__':
 
     msg.box("HDF5 MANIPULATOR: MERGE")
 
-    args = parser()
+    parser = argparse.ArgumentParser(description='')
+    parser.add_argument('--input', type=str, nargs='+',
+                        help='input hdf5 list')
+    parser.add_argument('--output', type=str,
+                        help='output hdf5 file')
+    args = parser.parse_args()
 
-    filelist = get_filelist([f.strip() for f in args.input_files.split(',')])
+
+    filelist = args.input
 
     if not filelist:
         msg.error("No files matching --input were found.")
