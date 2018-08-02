@@ -31,7 +31,7 @@ def get_filelist(bases):
     return sorted(filelist)
 
 
-def merge_data(data_list):
+def merge_data(data_list, attrs_list):
 
     """Merge dictionaries with data.
 
@@ -40,6 +40,7 @@ def merge_data(data_list):
     """
 
     data = None
+    attrs = None
 
     for f in data_list:
         size = check.get_size(data_list[f])
@@ -47,14 +48,16 @@ def merge_data(data_list):
             print "\nThe following datasets were found in %s:\n" % f
             msg.list_dataset(data_list[f])
             data = data_list[f]
+            attrs = attrs_list[f]
         else:
             print "\nAdding %(n)d entries from %(f)s" % {"n": size, "f": f}
             check.check_keys(data, data_list[f])
             check.check_shapes(data, data_list[f])
             for key in data_list[f]:
                 data[key] = np.append(data[key], data_list[f][key], axis=0)
+            attrs['n_events'] += attrs_list[f]['n_events']
 
-    return data
+    return data, attrs
 
 if __name__ == '__main__':
 
@@ -80,10 +83,11 @@ if __name__ == '__main__':
         print "\t - %s" % f
 
     data = OrderedDict()
+    attrs = OrderedDict()
 
     for f in filelist:
-        data[f] = hdf5.load(f)
+        data[f], attrs[f] = hdf5.load(f)
 
-    hdf5.save(args.output, merge_data(data))
+    hdf5.save(args.output, *merge_data(data, attrs))
 
     msg.info("Done")

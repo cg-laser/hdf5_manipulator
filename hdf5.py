@@ -16,16 +16,21 @@ def load(filename):
     f = h5py.File(filename, 'r')
 
     data = {}
+    attrs = {}
 
     for key in f:
         data[key] = f[key][...]
+        
+    for key in f.attrs:
+        attrs[key] = f.attrs[key]
+
 
     f.close()
 
-    return data
+    return data, attrs
 
 
-def save(filename, data):
+def save(filename, data, attrs):
 
     """Create hdf5 file with given data.
 
@@ -39,7 +44,10 @@ def save(filename, data):
     for key in data:
         f.create_dataset(key, data[key].shape, dtype=data[key].dtype,
                          compression='gzip')[...] = data[key]
-
+    
+    for key in attrs:
+        f.attrs[key] = attrs[key]
+    
     f.close()
 
 
