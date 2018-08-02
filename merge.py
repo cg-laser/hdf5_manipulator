@@ -59,24 +59,8 @@ def merge_data(data_list, attrs_list):
 
     return data, attrs
 
-if __name__ == '__main__':
 
-    msg.box("HDF5 MANIPULATOR: MERGE")
-
-    parser = argparse.ArgumentParser(description='')
-    parser.add_argument('--input', type=str, nargs='+',
-                        help='input hdf5 list')
-    parser.add_argument('--output', type=str,
-                        help='output hdf5 file')
-    args = parser.parse_args()
-
-
-    filelist = args.input
-
-    if not filelist:
-        msg.error("No files matching --input were found.")
-        sys.exit(1)
-
+def merge_data_filenames(filelist, outputfile):
     print "The following input files were found:\n"
 
     for f in filelist:
@@ -88,6 +72,27 @@ if __name__ == '__main__':
     for f in filelist:
         data[f], attrs[f] = hdf5.load(f)
 
-    hdf5.save(args.output, *merge_data(data, attrs))
+    hdf5.save(outputfile, *merge_data(data, attrs))
 
     msg.info("Done")
+
+
+if __name__ == '__main__':
+
+    msg.box("HDF5 MANIPULATOR: MERGE")
+
+    parser = argparse.ArgumentParser(description='')
+    parser.add_argument('--input', type=str, nargs='+',
+                        help='input hdf5 list')
+    parser.add_argument('--output', type=str,
+                        help='output hdf5 file')
+    args = parser.parse_args()
+
+    filelist = args.input
+
+    if not filelist:
+        msg.error("No files matching --input were found.")
+        sys.exit(1)
+        
+    merge_data_filenames(filelist, args.output)
+
